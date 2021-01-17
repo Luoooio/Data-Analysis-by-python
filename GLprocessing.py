@@ -14,6 +14,7 @@ from tqdm import tqdm
 DATE = datetime.datetime.now()
 DATE = DATE.strftime("%m%d%H%M%S")
 MATCH_DICT = {'Pool_Barbue_d脮Anvers_quail':'Pool_Barbue_quail',
+              'Pool_Barbue_dÕAnvers_quail':'Pool_Barbue_quail',
               'Plymouth_Rock':'Pool_Plymouth_Rock',
               'Sebright':'Pool_Sebright'
         } #lumpy:gatk
@@ -108,6 +109,10 @@ def Fileconcat(file1,file2,output):
     lumpy_Error_list = [i for i in list(data_lumpy.columns) if i not in list(data_gatk.columns)]
     if len(gatk_Error_list)>0 or len(lumpy_Error_list)>0:
         print("警告！！！列名无法对应，请在MATCH_DICT中添加对应")
+        print("在GATK中错误的列名:")
+        print(gatk_Error_list)
+        print("在Lumpy中错误的列名:")
+        print(lumpy_Error_list)
     else:
         #合并数据
         GLconcat = data_gatk.append(data_lumpy)

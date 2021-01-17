@@ -40,7 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('--output', '-o', help='Output file path,this is an optional parameter',type=str)
     args = parser.parse_args()
     inputPath = args.input
-    if  os.path.exists(args.output) :
+    outputPath = args.output if args.output else -1 
+    if  os.path.exists(outputPath) :
         outputPath = args.output
     else:
         outputPath = os.path.join(os.getcwd(),os.path.basename(inputPath)+DATE)
