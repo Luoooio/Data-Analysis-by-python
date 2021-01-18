@@ -7,6 +7,7 @@
 -o  可选参数，输出文件路径,如果无此参数，则自动在当前工作目录下新建文件夹储存得到的文件。
 ```
 eg：
+
 `python3 GLprocessing.py -m G -ig /home/Lunwen/GatkDate`
 
 这条命令会对`/home/Lunwen/GatkDate`下的所有以`.g.vcf`结尾的文件进行处理，然后在当前工作目录下生成`m-Gatk-DATA`文件夹，内存储所有处理好的同名Gatk文件。
@@ -30,6 +31,7 @@ PS:
 -o  可选参数，输出文件路径,如果无此参数，则自动在当前工作目录下新建文件夹储存得到的文件。
 ```
 eg:
+
 `python3 FST_to_Z.py -i /home/Lunwen/FSTest`
 
 该命令会处理 `/home/Lunwen/FSTest`下的所有以`.igv`结尾的文件，然后存储在`FSTest_DATE`文件中。
@@ -44,6 +46,7 @@ eg:
     -s  step size 步幅大小，默认等于-w
 ```
 eg:
+
 `python3 PSC_Build_sh.py -i /home/Lunwen -s 10000 -w 50000`
 
 该命令会检测所有`/home/Lunwen`目录下以`.gz`结尾的文件，并在当前工作目录生成sh脚本，并且在输出文件目录/当前工作目录新建类似`Pool_VT4H_50000_10000`的文件夹，以准备存放bcftools处理后的`vcf`文件。
@@ -55,6 +58,7 @@ eg:
     -o  输出文件目录，无则默认在当前工作目录
 ```
 eg：
+
 `python3 PSC_Calculate.py -i /home/Lunwen/Calu`
 
 该命令会检测Calu下的所有目录，然后对每个文件夹计算平均纯合度，对应保存在`Vcf_analysis`文件下。Calu应具有如下结构
