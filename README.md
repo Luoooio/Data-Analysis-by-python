@@ -1,6 +1,6 @@
 # Data-Analysis-by-python
 
-** pip install -r requirements.txt** 安装必要的库
+`pip install -r requirements.txt `安装必要的库
 
 ## GLprocessing.py 参数说明
 ```
