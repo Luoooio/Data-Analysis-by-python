@@ -1,4 +1,7 @@
 # Data-Analysis-by-python
+
+** pip install -r requirements.txt** 安装必要的库
+
 ## GLprocessing.py 参数说明
 ```
 -m 模式,有G、L、C三种模式。G 为 对GATK的数据进行处理，L 为 对Lumpy的数据进行处理，C 为分别处理后合并成新的文件。
