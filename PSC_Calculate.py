@@ -17,18 +17,25 @@ import numpy as np
 from tqdm import tqdm
 import threading
 import queue as Queue
+import re
 #创建锁
 mutex = threading.Lock()
 q = Queue.Queue()
+#创建正则对象，匹配文件中的start and end
+rx = re.compile(".*:(\w*)-(\w*)")
 
 def single_Vcf_analysis(queue,outputPath):
     while True:
         file = queue.get()
-        wsizel = os.path.basename(file).split('.')[0].split('_')
-        wsize = int(wsizel[1]) - int(wsizel[0]) + 1
-        outputFilename = os.path.join(outputPath,os.path.basename(os.path.dirname(file))+'.txt')
+        outputFilename = os.path.join(outputPath,os.path.basename(os.path.dirname(file))+'.igv')
         with open(file,'r') as f:
             lines = f.readlines()
+            f.seek(0)
+            readall = f.read()
+        ref = rx.findall(readall)
+        start,end = ref[0] if ref else print("匹配错误！！！")
+        wsize = int(start)+int(end)-1
+        middle = wsize/2
         for i in lines:
             if i[0:3] == 'PSC':
 #                print("提取成功")
@@ -36,11 +43,19 @@ def single_Vcf_analysis(queue,outputPath):
                 nMissing = int(i.split('\t')[-1])
         try:
             H0 = 1 - round(nHets/(wsize-nMissing),16)
+            strd = "NC_006088.5	%i	%i	snp	%f \n"%(middle-1,middle,H0)
 #            print(H0)
-            mutex.acquire()
-            with open(outputFilename,'a') as f:
-                f.write(str(H0)+'\n')
-            mutex.release()
+            if os.path.exists(outputFilename):
+                mutex.acquire()
+                with open(outputFilename,'a') as f:
+                    f.write(strd)
+                mutex.release()
+            else:
+                mutex.acquire()
+                with open(outputFilename,'a') as f:
+                    f.write("Chromosome	Start	End	Feature	H0\n")
+                    f.write(strd)
+                mutex.release()
         except NameError:
             print("%s 无法提取PSC信息，请检查"%s(file))
         queue.task_done()
@@ -50,7 +65,7 @@ def dir_Vcf_analysis(filedir,outputPath):
         filePath = os.path.join(filedir,i)
 #        print(filePath)
         q.put(filePath)
-    print(q.qsize())
+#    print(q.qsize())
     for i in range(4):
         t=threading.Thread(target=single_Vcf_analysis,args=(q,outputPath))
         t.setDaemon(True)
@@ -73,7 +88,6 @@ if __name__ == '__main__':
             filedir = os.path.join(inputPath,i)
             if os.path.isdir(filedir):
                 dir_Vcf_analysis(filedir,outputPath)
-    
     print('Done')
                 
     
