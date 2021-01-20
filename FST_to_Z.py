@@ -20,10 +20,10 @@ DATE = DATE.strftime("_%m%d%H%M%S")
 def FST_TO_Z(inputFile,outputFile):
     if os.path.basename(inputFile).split('.')[-1]=='igv':# 格式检查
         fst_bed = pd.read_table(inputFile, sep='\t', header=0)
-        fst_bed = fst_bed[['Chromosome', 'End', '1:2']]
+        fst_bed = fst_bed[['Chromosome','Start','End','Feature','1:2']]
         fst_bed['1:2'] = fst_bed['1:2'].map(lambda x: 0 if x=="na" else x ).astype(np.float64)
-        fst_bed['fst_zscore'] = (fst_bed['1:2'] - fst_bed['1:2'].mean())/fst_bed['1:2'].std(ddof=0)
-        fst_z_bed = fst_bed[['Chromosome', 'End','fst_zscore']]
+        fst_bed['Fst_zscore'] = (fst_bed['1:2'] - fst_bed['1:2'].mean())/fst_bed['1:2'].std(ddof=0)
+        fst_z_bed = fst_bed[['Chromosome','Start','End','Feature','Fst_zscore']]
 #        print(fst_z_bed.head())   
         fst_z_bed.to_csv(outputFile, sep='\t', index=False)
     else:
