@@ -8,6 +8,7 @@ import pandas as pd
 import datetime
 import argparse
 import os
+import csv 
 import numpy as np
 from tqdm import tqdm
 
@@ -20,7 +21,7 @@ MATCH_DICT = {'Pool_Barbue_d脮Anvers_quail':'Pool_Barbue_quail',
         } #lumpy:gatk
 
 def Gatk_maps(strd):   #gatk的映射函数
-    if len(strd.split(','))>3 and '/' in strd:
+    if '/' in strd:
         if strd[0]=='.' and strd[2]=='.':
             return '.'
         elif strd[0]=='0' and strd[2]=='0':
@@ -28,7 +29,7 @@ def Gatk_maps(strd):   #gatk的映射函数
         elif strd[0] == strd[2]:
             return 1
         else:
-            return 'H'
+            return 0.5
     else:
         return strd                    
 def Gatk_(file,output,st): #处理gatk文件：表头删除与映射
@@ -48,11 +49,11 @@ def Gatk_(file,output,st): #处理gatk文件：表头删除与映射
     data_1.columns=data_1.iloc[0,:]
     data_1 = data_1[1:]
     #   进行分类映射
-    data_1 = data_1.applymap(Gatk_maps)
+    data_1.iloc[:,9:] = data_1.iloc[:,9:].applymap(Gatk_maps)
     
     if st:
         outputfile = os.path.join(output,os.path.basename(file))
-        data_1.to_csv(outputfile,sep='\t',index=False)
+        data_1.to_csv(outputfile,sep='\t',index=False,quoting=csv.QUOTE_NONE)
     else:
         return data_1
 
@@ -91,7 +92,7 @@ def Lumpy_(file,output,st): #处理lumpy文件：映射
     
     if st:
         outputfile = os.path.join(output,os.path.basename(file))
-        data_2.to_csv(outputfile,sep='\t',index=False)
+        data_2.to_csv(outputfile,sep='\t',index=False,quoting=csv.QUOTE_NONE)
     else:
         return data_2
 
@@ -123,7 +124,7 @@ def Fileconcat(file1,file2,output):
         filename[0] += '_C'
         filename = '.'.join(filename)
         outputfile = os.path.join(output,filename)
-        GLconcat.to_csv(outputfile,sep='\t',index=False)
+        GLconcat.to_csv(outputfile,sep='\t',index=False,quoting=csv.QUOTE_NONE)
     else:
         print("路径错误")
 
