@@ -47,7 +47,7 @@ if __name__ == '__main__':
             while start < ALLSIZE-wsize:
                 outputfilePath = os.path.join(outputdirPath,str(start)+'_'+str(end)+'.vcf')
                 SHSTR += 'bcftools stats -r NC_006089.5:%i-%i -s - %s > %s \n'%(start,end,inputfilePath,outputfilePath)
-                SHSTR += 'echo 已完成百分之%i \n'%(round(start/ALLSIZE,4)*10000)
+                SHSTR += 'echo 已完成百分之%i \n'%(round(start/ALLSIZE,4)*100)
                 start += ssize
                 end = start+wsize-1
     # 保存文件

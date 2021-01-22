@@ -18,11 +18,12 @@ from tqdm import tqdm
 import threading
 import queue as Queue
 import re
+import csv
 #创建锁
 mutex = threading.Lock()
 q = Queue.Queue()
 #创建正则对象，匹配文件中的start and end
-rx = re.compile(".*:(\w*)-(\w*)")
+rx = re.compile("([A-Z]*_\w*\.\w*):(\w*)-(\w*)")
 
 def single_Vcf_analysis(queue,outputPath):
     while True:
@@ -33,18 +34,18 @@ def single_Vcf_analysis(queue,outputPath):
             f.seek(0)
             readall = f.read()
         ref = rx.findall(readall)
-        start,end = ref[0] if ref else print("匹配错误！！！")
-        wsize = int(start)+int(end)-1
-        middle = wsize/2
+        chromosome,start,end = ref[0] if ref else print("%s 匹配错误！！！"%(file))
+        wsize = int(end)-int(start)+1
+        middle = (int(start)+int(end)-1)/2
         for i in lines:
             if i[0:3] == 'PSC':
 #                print("提取成功")
                 nHets = int(i.split('\t')[5])
                 nMissing = int(i.split('\t')[-1])
         try:
-            H0 = 1 - round(nHets/(wsize-nMissing),16)
-            strd = "NC_006088.5	%i	%i	snp	%f \n"%(middle-1,middle,H0)
-#            print(H0)
+#            print(wsize)
+            H0 = 1 - round(nHets/(wsize-nMissing),7)
+            strd = "%s	%i	%i	snp	%f \n"%(chromosome,middle-1,middle,H0)
             if os.path.exists(outputFilename):
                 mutex.acquire()
                 with open(outputFilename,'a') as f:
@@ -82,13 +83,20 @@ if __name__ == '__main__':
     inputPath = args.input if args.input else print("输入路径错误")
     outputPathB = os.path.join(os.getcwd(),"Vcf_analysis")
     outputPath = args.output if args.output else outputPathB
+    # 计算
     x = 0 if os.path.exists(outputPath) else os.makedirs(outputPath)
     if os.path.exists(inputPath):
         for i in tqdm(os.listdir(inputPath)):
             filedir = os.path.join(inputPath,i)
             if os.path.isdir(filedir):
                 dir_Vcf_analysis(filedir,outputPath)
-    print('Done')
-                
-    
+    print('计算完成！！！')
+    # 排序
+    for i in os.listdir(outputPath):
+        filename = os.path.join(outputPath,i)
+        pda = pd.read_table(filename)
+        pda = pda.sort_values('End')
+        pda = pda.drop_duplicates(subset=None,keep='first',inplace=False)
+        pda.to_csv(filename,index=False,sep='\t',quoting=csv.QUOTE_NONE)
+    print('排序完成！！！')
 
