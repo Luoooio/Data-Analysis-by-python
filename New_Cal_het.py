@@ -17,7 +17,7 @@ import datetime
 DATE = datetime.datetime.now()
 DATE = DATE.strftime("_%m%d%H%M%S")
 
-def Cal_het(input,output,wizs):
+def Cal_het(input,output,wizs,iname):
     Pandany = pd.read_table(input, sep='\t', header=0)
     Pandany_1 = Pandany.loc[:,['##chr','pos','maa_1','mia_1']]
     #提取maa_1与mia_1                             
@@ -44,9 +44,11 @@ def Cal_het(input,output,wizs):
         i+=wizs
     Pandany_New = pd.DataFrame(Pan_NEW,columns = ['Chromosome','Start','End','Feature','Hp'])
     #Hp列的标准化
+    outputFile_Or = os.path.join(output,iname.split('.')[0]+'_Or.igv')
+    outputFile_ls = os.path.join(output,iname.split('.')[0]+'.igv')    
+    Pandany_New.to_csv(outputFile_Or, sep='\t', index=False)
     Pandany_New['Hp'] = (Pandany_New['Hp'] - Pandany_New['Hp'].mean())/Pandany_New['Hp'].std(ddof=0)
-    Pandany_New.to_csv(output, sep='\t', index=False)
-    
+    Pandany_New.to_csv(outputFile_ls, sep='\t', index=False)
 if __name__ == '__main__':
     # 参数解析
     parser = argparse.ArgumentParser()
@@ -61,6 +63,5 @@ if __name__ == '__main__':
     wsize = args.windowsize if args.windowsize else print("输入wsize错误")
     for i in tqdm(os.listdir(inputPath)):
         inputFile = os.path.join(inputPath,i)
-        outputFile = os.path.join(outputPath,i.split('.')[0]+'.igv')
-        if os.path.isfile(inputFile) and i.split('.')[-1]=='rc':
-            Cal_het(inputFile,outputFile,wsize)
+        if os.path.isfile(inputFile):
+            Cal_het(inputFile,outputPath,wsize,i)
