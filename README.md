@@ -1,6 +1,14 @@
 # Data-Analysis-by-python
 
 `pip install -r requirements.txt `安装必要的库
+## New_Cal_het.py参数说明
+```
+    -i  输入文件目录
+    -o  输出文件目录，无则默认在当前工作目录创建新目录
+    -w  window size 滑动窗口大小
+```
+eg：
+`python New_Cal_het.py -i "C:\Users\Administrator\Desktop\pycode\1" -o "C:\Users\Administrator\Desktop\pycode\new" -w 50000`
 
 ## GLprocessing.py 参数说明
 ```
