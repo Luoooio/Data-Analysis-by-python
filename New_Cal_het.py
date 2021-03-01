@@ -19,7 +19,7 @@ DATE = DATE.strftime("_%m%d%H%M%S")
 
 def Cal_het(input,output,wizs,iname):
     Pandany = pd.read_table(input, sep='\t', header=0)
-    Pandany_1 = Pandany.loc[:,['##chr','pos','maa_1','mia_1']]
+    Pandany_1 = Pandany.iloc[:,[0,1,9,11]]
     #提取maa_1与mia_1                             
     Pandany_1['maa_1'] = Pandany_1['maa_1'].map(lambda x:int(x.split('/')[0]))
     Pandany_1['mia_1'] = Pandany_1['mia_1'].map(lambda x:int(x.split('/')[0]))
@@ -33,8 +33,8 @@ def Cal_het(input,output,wizs,iname):
     for name,group in tqdm(Pandany_1_gy):
         li =[]
         li.append(group.iloc[0,0])
-        li.append(i-1)
-        li.append(i)
+        li.append(int(name*wizs+wizs/2)-1)
+        li.append(int(name*wizs+wizs/2))
         li.append('snp')
         i_maa1 = group.loc[:,'maa_1'].sum()
         i_mia1 = group.loc[:,'mia_1'].sum()
