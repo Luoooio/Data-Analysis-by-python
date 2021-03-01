@@ -17,7 +17,7 @@ import datetime
 DATE = datetime.datetime.now()
 DATE = DATE.strftime("_%m%d%H%M%S")
 
-def Cal_het(input,output,wizs,iname):
+def Cal_het(input,output,wizs,iname,ssize):
     Pandany = pd.read_table(input, sep='\t', header=0)
     Pandany_1 = Pandany.iloc[:,[0,1,9,11]]
     #提取maa_1与mia_1                             
@@ -26,22 +26,36 @@ def Cal_het(input,output,wizs,iname):
     #删除0项
     Pandany_1 = Pandany_1.drop(Pandany_1[Pandany_1.maa_1 == 0].index)
     Pandany_1 = Pandany_1.drop(Pandany_1[Pandany_1.mia_1 == 0].index)
-    #分组计算hp
+    #查询计算hp
     Pan_NEW = []
-    i = int(wizs/2)
-    Pandany_1_gy = Pandany_1.groupby(Pandany_1['pos'].map(lambda x:x//wizs))
-    for name,group in tqdm(Pandany_1_gy):
+    posmax = Pandany_1.iloc[:,1].max()
+    i = 0
+    pbar = tqdm(total = posmax/ssize+1)
+    while True:
+        groupmin = i*ssize
+        groupmax = groupmin+wizs
+        local = groupmin+int(wizs/2)
+        if groupmin > posmax:
+            break
+        Pandany_1_cut = Pandany_1[(Pandany_1.iloc[:,1]>=groupmin) &
+                                  (Pandany_1.iloc[:,1]<=groupmax)]
+#        Pandany_1_cut = Pandany_1.query('pos>=@groupmin and pos<=@groupmax')
+        if Pandany_1_cut.empty:
+            i+=1
+            print("%i~%i无数据"%(groupmin,groupmax))
+            continue
         li =[]
-        li.append(group.iloc[0,0])
-        li.append(int(name*wizs+wizs/2)-1)
-        li.append(int(name*wizs+wizs/2))
+        li.append(Pandany_1_cut.iloc[0,0])
+        li.append(local-1)
+        li.append(local)
         li.append('snp')
-        i_maa1 = group.loc[:,'maa_1'].sum()
-        i_mia1 = group.loc[:,'mia_1'].sum()
+        i_maa1 = Pandany_1_cut.loc[:,'maa_1'].sum()
+        i_mia1 = Pandany_1_cut.loc[:,'mia_1'].sum()
         Hp = 2*i_maa1*i_mia1/((i_maa1+i_mia1)**2)
         li.append(Hp)
         Pan_NEW.append(li)
-        i+=wizs
+        pbar.update(1)
+        i+=1
     Pandany_New = pd.DataFrame(Pan_NEW,columns = ['Chromosome','Start','End','Feature','Hp'])
     #Hp列的标准化
     outputFile_Or = os.path.join(output,iname.split('.')[0]+'_Or.igv')
@@ -55,13 +69,15 @@ if __name__ == '__main__':
     parser.add_argument('--input', '-i', help='input file path',type=str)
     parser.add_argument('--output', '-o', help='Output file path,this is an optional parameter',type=str)
     parser.add_argument('--windowsize', '-w', help=' ',type=int)
+    parser.add_argument('--ssize', '-s', help=' ',type=int)    
     args = parser.parse_args()
     inputPath = args.input if args.input else print("输入路径错误")
     outputPathB = os.path.join(os.getcwd(),"New_Cal_het"+DATE)
     outputPath = args.output if args.output else outputPathB
     x = 0 if os.path.exists(outputPath) else os.makedirs(outputPath)
     wsize = args.windowsize if args.windowsize else print("输入wsize错误")
+    ssize = args.ssize if args.ssize else wsize
     for i in tqdm(os.listdir(inputPath)):
         inputFile = os.path.join(inputPath,i)
         if os.path.isfile(inputFile):
-            Cal_het(inputFile,outputPath,wsize,i)
+            Cal_het(inputFile,outputPath,wsize,i,ssize)
