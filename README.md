@@ -6,9 +6,10 @@
     -i  输入文件目录
     -o  输出文件目录，无则默认在当前工作目录创建新目录
     -w  window size 滑动窗口大小
+	-s  step size 步幅大小，默认等于-w
 ```
 eg：
-`python New_Cal_het.py -i "C:\Users\Administrator\Desktop\pycode\1" -o "C:\Users\Administrator\Desktop\pycode\new" -w 50000`
+`python New_Cal_het.py -i "C:\Users\Administrator\Desktop\pycode\1" -o "C:\Users\Administrator\Desktop\pycode\new" -w 50000 -s 30000`
 
 ## GLprocessing.py 参数说明
 ```
