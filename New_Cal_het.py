@@ -4,8 +4,6 @@ Created on Sun Feb 28 12:55:05 2021
 
 @author: Administrator
 """
-%load_ext Cython
-%%cython
 import os
 import sys
 import getopt
