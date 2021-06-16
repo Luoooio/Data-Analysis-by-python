@@ -1,6 +1,15 @@
 # Data-Analysis-by-python
 
 `pip install -r requirements.txt `安装必要的库
+## IBD_mapping.py 参数说明
+```
+    -i  输入文件目录
+    -o  输出文件目录，无则默认在当前工作目录创建新目录
+    -m  模式：a为对所有个体进行IBD搜索，e为对特殊某些个体进行IBD搜索，其定义于文件137行。
+```
+eg:
+`python IBD_mapping.py -i C:\Users\Administrator\Desktop\LW论文\IBD\IBD\ceshi -m a`
+
 ## New_Cal_het.py参数说明
 ```
     -i  输入文件目录
